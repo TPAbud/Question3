@@ -1,0 +1,152 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+#include <cctype>
+using namespace std;
+
+void ConcatRemove (string s, string t, int k)
+{
+  //Defining variables
+  int ascii = 0;
+  int pos = 0;
+  int MinEraseNum = 0;
+  int EraseNum = 0;
+  int MinConcatNum = 0;
+  int ConcatNum = 0;
+  int MinOperationNum = 0;
+  int OperationNum = 0;
+  int aux = 0;
+  
+ //Checking constraints of length and value
+  if (s.length()<1 || s.length()>100){
+      cout << "\nError.\nThe length of parameter s must range from 1 to 100.\nPlease, restart the program and try again.\n";
+      return;
+  } else if (t.length()<1 || t.length()>100){
+      cout << "\nError.\nThe length of parameter t must range from 1 to 100.\nPlease, restart the program and try again.\n";
+      return;
+  } else if (k<1 || k>100){
+      cout << "\nError.\nThe value of parameter k must range from 1 to 100.\nPlease, restart the program and try again.\n";
+      return;
+  }
+  
+  //Formatting strings s and t
+  s.erase(remove(s.begin(), s.end(), ' '), s.end()); //erase spaces in string s
+  transform(s.begin(), s.end(), s.begin(),
+    [](unsigned char c){ return tolower(c); }); // transform to lowercase letters
+  
+  t.erase(remove(t.begin(), t.end(), ' '), t.end()); //erase spaces in string t
+  transform(t.begin(), t.end(), t.begin(),
+    [](unsigned char c){ return tolower(c); }); // transform to lowercase letters
+    
+  //Print s,t and k  
+  cout << "\ns: " << s << "\n";
+  cout << "t: " << t << "\n";
+  cout << "k: " << k << "\n";
+  
+  //Calculating the size of s and t
+  int ns = s.length(); // size of s
+  int nt = t.length(); // size of t
+  
+  //Checking if the characters of strings s and t correspond to letters 
+  //of the Portuguese alphabet, ascii [a-z]  
+  for (int i=0; i<ns; ++i)
+  {
+      ascii=s[i];
+      //cout << s[i] << " " << ascii << "\n" ;
+      if (ascii<97 || ascii>122) {
+          cout << "\nError.\nThe characters of string s must be letters of the Portuguese alphabet, ascii [a-z].\nPlease, restart the program and try again.\n";
+          return;
+      }
+  }
+  
+  for (int i=0; i<nt; ++i)
+  {
+      ascii=t[i];
+      //cout << t[i] << " " << ascii << "\n" ;
+      if (ascii<97 || ascii>122) {
+          cout << "\nError.\nThe characters of string t must be letters of the Portuguese alphabet, ascii [a-z].\nPlease, restart the program and try again.\n";
+          return;
+      }
+  }  
+  
+  //checking for similar characters in s and t
+  //save the last position where s[i]==t[i]
+  for (int i=0;i<=nt+1;i=i+1){
+      if (s[i]==t[i]){
+          if(i==nt){
+              pos = i-1; // save the last position where s[i]==t[i]
+          }
+      }
+      else {
+          pos = i-1; // save the last position where s[i]==t[i]
+          break;
+      }
+      
+  }
+  
+  //Calculating the number of operations
+  MinEraseNum=ns-pos-1; // calculate the minimum number of characters to be erased in s
+  MinConcatNum=nt-pos-1; // calculate the minimum number of characters to be concatenated in t
+  MinOperationNum = MinEraseNum + MinConcatNum; // calculate the minimum number of operations
+  if (MinOperationNum < k){
+      if(ns>0){
+          EraseNum=ns;
+          ConcatNum=MinConcatNum+ns-MinEraseNum;
+          OperationNum = EraseNum + ConcatNum;
+          if(OperationNum<k){
+              EraseNum=EraseNum+(k-OperationNum);
+              OperationNum = EraseNum + ConcatNum;
+          } else if (OperationNum>k){
+              aux=k-MinOperationNum;
+              if(aux % 2 == 0){
+                  EraseNum=MinEraseNum +(aux/2);
+                  ConcatNum=MinConcatNum+(aux/2);
+                  OperationNum = EraseNum + ConcatNum;
+              }
+          }
+      }
+  } else {
+      if (MinOperationNum > k){
+          EraseNum = MinEraseNum;
+      } else {
+          EraseNum = k - MinOperationNum;
+      }
+      ConcatNum=MinConcatNum;
+      OperationNum = EraseNum + ConcatNum;
+  }
+      
+//OUTPUT
+if (MinOperationNum==k){
+    cout << "Yes\n";
+    cout << "Concatenated: " << MinConcatNum << "\n";
+    cout << "Removed: " << MinEraseNum << "\n";
+} else if (OperationNum==k){
+    cout << "Yes\n";
+    cout << "Concatenated: " << ConcatNum << "\n";
+    cout << "Removed: " << EraseNum << "\n";
+} else {
+    cout << "No\n";
+}
+  
+}
+
+int main (){
+  
+  //Define variables
+  string s;
+  string t;
+  int k=0;
+    
+  //INPUT
+  cout << "Type s: ";
+  getline(cin, s);
+  cout << "Type t: ";
+  getline(cin, t);
+  cout << "Type k: ";
+  cin >> k;
+
+//Calling ConcatRemove function    
+ConcatRemove (s,t,k);
+    
+return 0;
+}
